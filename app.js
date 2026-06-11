@@ -105,6 +105,11 @@ const SLIDESHOW_DATA = [
   }
 ];
 
+// Inicializar cliente de Supabase
+const supabaseUrl = 'https://dsyxiowlipttwjuhoqio.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzeXhpb3dsaXB0dHdqdWhvcWlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwODIxMTIsImV4cCI6MjA5NTY1ODExMn0.3nEAsh_QMmLr_RRD-FOErC-nNOSwaJxMJb_ENjJDaPI';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
 /* ==========================================================================
    INICIALIZACIÓN GENERAL
    ========================================================================== */
@@ -430,7 +435,7 @@ function initTimelineObserver() {
 /* ==========================================================================
    GALERÍA DE FOTOS Y LIGHTBOX
    ========================================================================== */
-function initGallery() {
+async function initGallery() {
   const grid = document.getElementById("gallery-grid");
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightbox-img");
@@ -440,8 +445,8 @@ function initGallery() {
   
   if (!grid) return;
   
-  // Renderizar imágenes iniciales
-  renderGalleryItems(INITIAL_PHOTOS);
+  // Cargar galería inicial
+  await combineAndRenderGallery();
 
   function renderGalleryItems(photosList) {
     // Limpiar grid
@@ -451,7 +456,7 @@ function initGallery() {
       const item = document.createElement("div");
       item.className = "gallery-item";
       
-      const imgUrl = photo.imgData || createElegantPlaceholderSVG(photo.svgColor1, photo.svgColor2, photo.text);
+      const imgUrl = photo.url || createElegantPlaceholderSVG(photo.svgColor1, photo.svgColor2, photo.text);
       
       item.innerHTML = `
         <img src="${imgUrl}" alt="${photo.title}">
@@ -484,61 +489,100 @@ function initGallery() {
     if (e.target === lightbox) closeLightbox();
   });
   
-  // Soporte para subir fotos dinámicamente en memoria de navegador (localStorage)
-  uploader.addEventListener("change", (e) => {
+  // Soporte para subir fotos a Supabase Storage
+  uploader.addEventListener("change", async (e) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     
-    let loadedPhotos = JSON.parse(localStorage.getItem("quenia_gallery_uploads")) || [];
+    uploader.disabled = true;
+    const labelSpan = uploader.parentElement.querySelector("span");
+    const originalText = labelSpan.textContent;
+    labelSpan.textContent = "Subiendo fotos a la nube...";
     
-    Array.from(files).forEach((file, index) => {
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const newPhoto = {
-          id: Date.now() + index,
-          title: file.name.split(".")[0] || "Recuerdo Especial",
-          desc: "Foto subida por un compañero de Barraza Y Cia.",
-          imgData: evt.target.result
-        };
-        
-        loadedPhotos.push(newPhoto);
-        localStorage.setItem("quenia_gallery_uploads", JSON.stringify(loadedPhotos));
-        
-        // Volver a renderizar combinando iniciales + subidos
-        combineAndRenderGallery();
-        triggerCelebrationConfetti(15);
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${i}.${fileExt}`;
+      const filePath = fileName;
+
+      // 1. Subir archivo a Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase
+        .storage
+        .from('quenia_recuerdos')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error("Error al subir archivo:", uploadError);
+        alert(`Error al subir la imagen: ${file.name}. Por favor intenta de nuevo.`);
+        continue;
+      }
+
+      // 2. Obtener URL pública
+      const { data: urlData } = supabase
+        .storage
+        .from('quenia_recuerdos')
+        .getPublicUrl(filePath);
+
+      const publicUrl = urlData.publicUrl;
+
+      // 3. Registrar metadatos en la tabla quenia_photos
+      const newPhotoRecord = {
+        title: file.name.split(".")[0] || "Recuerdo Especial",
+        desc_text: "Foto compartida por un compañero de Barraza Y Cia.",
+        url: publicUrl
       };
-      reader.readAsDataURL(file);
-    });
+
+      const { error: dbError } = await supabase
+        .from('quenia_photos')
+        .insert([newPhotoRecord]);
+
+      if (dbError) {
+        console.error("Error al guardar metadatos en base de datos:", dbError);
+      }
+    }
+
+    uploader.disabled = false;
+    labelSpan.textContent = originalText;
+    uploader.value = ""; // Limpiar input
+
+    await combineAndRenderGallery();
+    triggerCelebrationConfetti(20);
   });
 
-  function combineAndRenderGallery() {
-    const uploads = JSON.parse(localStorage.getItem("quenia_gallery_uploads")) || [];
-    renderGalleryItems([...INITIAL_PHOTOS, ...uploads]);
+  async function combineAndRenderGallery() {
+    // Obtener fotos de la base de datos
+    let { data: dbPhotos, error } = await supabase
+      .from('quenia_photos')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    let formattedDbPhotos = [];
+    if (!error && dbPhotos) {
+      formattedDbPhotos = dbPhotos.map(photo => ({
+        id: photo.id,
+        title: photo.title,
+        desc: photo.desc_text,
+        url: photo.url
+      }));
+    }
+
+    // Combinar iniciales con subidas
+    const combined = [...INITIAL_PHOTOS, ...formattedDbPhotos];
+    renderGalleryItems(combined);
   }
-  
-  // Cargar si ya hay subidas previas
-  combineAndRenderGallery();
 }
 
 /* ==========================================================================
    LIBRO DE FIRMAS (GUESTBOOK) CON LOCALSTORAGE
    ========================================================================== */
-function initGuestbook() {
+async function initGuestbook() {
   const form = document.getElementById("guestbook-form");
   const wall = document.getElementById("guestbook-wall");
   if (!form) return;
   
-  // Obtener mensajes de localStorage o usar presets
-  let stored = JSON.parse(localStorage.getItem("quenia_guestbook_entries"));
-  if (!stored) {
-    stored = PRESET_MESSAGES;
-    localStorage.setItem("quenia_guestbook_entries", JSON.stringify(stored));
-  }
+  await loadMessages();
   
-  renderMessages(stored);
-  
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     
     const nameInput = document.getElementById("input-name");
@@ -557,29 +601,65 @@ function initGuestbook() {
       date: formattedDate
     };
     
-    // Guardar en array y actualizar localStorage
-    let currentEntries = JSON.parse(localStorage.getItem("quenia_guestbook_entries")) || [];
-    currentEntries.unshift(newEntry); // Agregar al inicio
-    localStorage.setItem("quenia_guestbook_entries", JSON.stringify(currentEntries));
+    // Deshabilitar botón durante el envío
+    const submitBtn = document.getElementById("btn-submit-message");
+    if (submitBtn) submitBtn.disabled = true;
+
+    // Guardar en Supabase
+    const { error } = await supabase
+      .from('quenia_messages')
+      .insert([newEntry]);
+      
+    if (submitBtn) submitBtn.disabled = false;
+
+    if (error) {
+      console.error("Error al guardar mensaje en base de datos:", error);
+      alert("No se pudo guardar el mensaje. Intenta nuevamente.");
+      return;
+    }
     
     // Limpiar formulario
     form.reset();
     
-    // Renderizar de nuevo con animación
-    renderMessages(currentEntries, true);
+    // Recargar y animar
+    await loadMessages(true);
     
     // Efecto de lluvia de confeti
     triggerCelebrationConfetti(45);
   });
   
-  function renderMessages(entries, isUpdate = false) {
+  async function loadMessages(isUpdate = false) {
+    let { data: entries, error } = await supabase
+      .from('quenia_messages')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error("Error al cargar mensajes desde base de datos:", error);
+      entries = PRESET_MESSAGES;
+    } else if (!entries || entries.length === 0) {
+      // Si la base de datos está vacía, pre-cargar los presets en Supabase
+      const { error: insertError } = await supabase
+        .from('quenia_messages')
+        .insert(PRESET_MESSAGES);
+      
+      if (!insertError) {
+        const { data: reloaded } = await supabase
+          .from('quenia_messages')
+          .select('*')
+          .order('created_at', { ascending: false });
+        entries = reloaded || PRESET_MESSAGES;
+      } else {
+        entries = PRESET_MESSAGES;
+      }
+    }
+
     wall.innerHTML = "";
     
     entries.forEach((entry, idx) => {
       const card = document.createElement("article");
       card.className = "message-card";
       
-      // Aplicar una animación de entrada solo si es el mensaje recién ingresado
       if (isUpdate && idx === 0) {
         card.style.opacity = "0";
         card.style.transform = "scale(0.8) translateY(-20px)";
@@ -601,7 +681,6 @@ function initGuestbook() {
       wall.appendChild(card);
       
       if (isUpdate && idx === 0) {
-        // Trigger reflow y animar entrada
         setTimeout(() => {
           card.style.opacity = "1";
           card.style.transform = "scale(1) translateY(0)";
