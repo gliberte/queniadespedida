@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homenaje a Quenia Quintana de Broce | Barraza Y Cia</title>
+  <meta name="description" content="Una landing page especial para rendir homenaje y despedida a nuestra estimada compañera Quenia Quintana de Broce en su jubilación de Barraza Y Cia.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Partículas de luz de fondo -->
+  <div id="particle-container" class="particle-container" aria-hidden="true"></div>
+
+  <!-- Botón de Audio Flotante y Ecualizador -->
+  <div class="audio-widget-container" id="audio-widget" role="region" aria-label="Control de música ambiental">
+    <div class="equalizer-bar-container" id="eq-container">
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+    </div>
+    <button class="audio-control-btn" id="audio-toggle-btn" aria-label="Reproducir melodía de homenaje">
+      <svg class="icon-play" id="icon-play" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      <svg class="icon-pause hide" id="icon-pause" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+      </svg>
+    </button>
+    <div class="audio-tooltip">Melodía del Recuerdo</div>
+  </div>
+
+  <!-- Barra de Navegación -->
+  <header class="main-header">
+    <div class="header-logo">
+      <span class="logo-company">Barraza Y Cia</span>
+      <span class="logo-divider">|</span>
+      <span class="logo-event">Homenaje</span>
+    </div>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="#inicio" class="nav-link">Inicio</a></li>
+        <li><a href="#homenaje" class="nav-link">El Homenaje</a></li>
+        <li><a href="#trayectoria" class="nav-link">Trayectoria</a></li>
+        <li><a href="#mensajes" class="nav-link">Muro de Deseos</a></li>
+        <li><a href="#galeria" class="nav-link">Galería</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Sección Hero -->
+    <section id="inicio" class="hero-section">
+      <div class="hero-content">
+        <span class="hero-tag">Con Gratitud y Afecto</span>
+        <h1 class="hero-title">¡Gracias por tanto, Quenia!</h1>
+        <p class="hero-subtitle">
+          Celebrando la dedicación, profesionalismo y calidez de <strong>Quenia Quintana de Broce</strong> en su jubilación y transición hacia un merecido descanso, tras dejar una huella imborrable en la familia de Barraza Y Cia.
+        </p>
+        <div class="hero-actions">
+          <a href="#homenaje" class="btn btn-primary" id="btn-ver-video">Ver Homenaje</a>
+          <a href="#mensajes" class="btn btn-secondary" id="btn-escribir">Escribir Mensaje</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-frame-container">
+          <div class="hero-glow"></div>
+          <div class="hero-frame">
+            <div class="hero-image-overlay"></div>
+            <!-- Se cargará una ilustración o foto representativa de homenaje -->
+            <img src="placeholder_hero.jpg" alt="Homenaje a Quenia Quintana de Broce" id="hero-main-img" class="hero-img">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de Homenaje / Video -->
+    <section id="homenaje" class="homenaje-section">
+      <div class="section-header">
+        <h2 class="section-title">Palabras del Corazón</h2>
+        <p class="section-description">
+          Sus compañeros de Barraza Y Cia se unen en un solo mensaje de agradecimiento. Explora la recopilación de videos y fotos dedicados a Quenia.
+        </p>
+      </div>
+
+      <!-- Contenedor del Reproductor Híbrido -->
+      <div class="media-hub-container">
+        <div class="media-tabs" role="tablist">
+          <button class="tab-btn active" id="tab-video" role="tab" aria-selected="true" aria-controls="panel-video">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+            </svg>
+            Video de Despedida
+          </button>
+          <button class="tab-btn" id="tab-slideshow" role="tab" aria-selected="false" aria-controls="panel-slideshow">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4 2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z"/>
+            </svg>
+            Diapositivas de Recuerdos
+          </button>
+        </div>
+
+        <div class="media-panels">
+          <!-- Panel Video -->
+          <div class="media-panel show" id="panel-video" role="tabpanel" aria-labelledby="tab-video">
+            <div class="video-player-wrapper">
+              <div class="video-container" id="video-content-area">
+                <!-- Por defecto, mostramos una pantalla de reproducción elegante con controles de prueba -->
+                <div class="video-mock-overlay" id="video-mock-overlay">
+                  <div class="mock-play-glow"></div>
+                  <button class="mock-play-btn" id="mock-play-btn" aria-label="Iniciar reproducción del video de despedida">
+                    <svg class="mock-play-icon" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </button>
+                  <p class="mock-video-text">Video de Composición de Barraza Y Cia</p>
+                  <p class="mock-video-subtext">Click para iniciar el viaje y la música</p>
+                </div>
+                <!-- Elemento de video oculto inicialmente o listo para reproducir -->
+                <video id="tribute-video" class="tribute-video hide" controls preload="metadata">
+                  <!-- El usuario podrá rellenar este origen en el futuro -->
+                  <source src="" type="video/mp4">
+                  Tu navegador no soporta reproducción de video.
+                </video>
+                
+                <!-- Entrada para que el usuario pueda insertar su propio video fácilmente durante el demo -->
+                <div class="video-url-injector" id="url-injector">
+                  <button class="toggle-injector-btn" id="btn-toggle-injector" title="Configurar origen del video">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                      <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                    </svg>
+                  </button>
+                  <div class="injector-popover hide" id="injector-popover">
+                    <h4>Ajustar Origen de Video</h4>
+                    <p class="popover-info">Agrega un enlace de YouTube, Vimeo o selecciona un archivo de video local:</p>
+                    <input type="text" id="video-link-input" placeholder="Pegar URL (YouTube, Vimeo, MP4)...">
+                    <div class="or-divider"><span>O</span></div>
+                    <label class="file-upload-label">
+                      <input type="file" id="video-file-input" accept="video/*">
+                      <span>Seleccionar Archivo Local</span>
+                    </label>
+                    <button class="btn btn-primary btn-sm" id="btn-apply-video">Aplicar Cambios</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel Slideshow -->
+          <div class="media-panel" id="panel-slideshow" role="tabpanel" aria-labelledby="tab-slideshow">
+            <div class="slideshow-wrapper">
+              <div class="slides-container" id="slides-container">
+                <!-- Los slides se generarán dinámicamente con JavaScript -->
+              </div>
+              
+              <!-- Controles del Slideshow -->
+              <button class="slide-control-btn prev" id="slide-prev" aria-label="Diapositiva anterior">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+              </button>
+              <button class="slide-control-btn next" id="slide-next" aria-label="Siguiente diapositiva">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+              </button>
+              
+              <div class="slideshow-dots" id="slideshow-dots"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Trayectoria (Línea del Tiempo) -->
+    <section id="trayectoria" class="trayectoria-section">
+      <div class="section-header">
+        <h2 class="section-title">Una Trayectoria de Excelencia</h2>
+        <p class="section-description">
+          Momentos clave y grandes aportes de Quenia a lo largo de sus valiosos años en Barraza Y Cia.
+        </p>
+      </div>
+
+      <div class="timeline-container">
+        <div class="timeline-line"></div>
+        
+        <!-- Hito 1 -->
+        <div class="timeline-item left scroll-reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Inicio de una Era</span>
+            <h3>Bienvenida a Barraza Y Cia</h3>
+            <p>Quenia se integra al equipo, trayendo consigo una energía vibrante, ética laboral intachable y un espíritu de colaboración que rápidamente se convertiría en su sello distintivo.</p>
+          </div>
+        </div>
+
+        <!-- Hito 2 -->
+        <div class="timeline-item right scroll-reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Liderazgo y Crecimiento</span>
+            <h3>Compromiso y Proyectos Clave</h3>
+            <p>Destacando por su capacidad organizativa y su calidez humana. Quenia asumió roles protagónicos en la gestión administrativa, ganándose el respeto de toda la junta y compañeros.</p>
+          </div>
+        </div>
+
+        <!-- Hito 3 -->
+        <div class="timeline-item left scroll-reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Pilar del Equipo</span>
+            <h3>Mentora y Amiga de Todos</h3>
+            <p>Más allá de sus responsabilidades profesionales, Quenia se consolidó como el hombro en el que apoyarse y la sonrisa cálida dispuesta a guiar a las nuevas generaciones que se unieron a la empresa.</p>
+          </div>
+        </div>
+
+        <!-- Hito 4 -->
+        <div class="timeline-item right scroll-reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Reconocimiento Especial</span>
+            <h3>Medalla al Mérito y Dedicación</h3>
+            <p>Celebración especial donde la junta directiva y sus compañeros le otorgaron un reconocimiento formal por su inquebrantable compromiso e impacto positivo en la cultura organizacional.</p>
+          </div>
+        </div>
+
+        <!-- Hito 5 -->
+        <div class="timeline-item left scroll-reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date">Presente</span>
+            <h3>Una Nueva Etapa: Descanso de Ley</h3>
+            <p>Hoy celebramos su jubilación formal. Quenia inicia su merecido descanso por ley, dejando una empresa mejor y a todo un equipo inspirado por su gran ejemplo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Muro de Deseos (Guestbook) -->
+    <section id="mensajes" class="mensajes-section">
+      <div class="section-header">
+        <h2 class="section-title">Muro de Afecto y Buenos Deseos</h2>
+        <p class="section-description">
+          Deja unas palabras, una anécdota o tus mejores deseos para la nueva etapa de descanso de Quenia.
+        </p>
+      </div>
+
+      <div class="guestbook-layout">
+        <!-- Formulario -->
+        <div class="guestbook-form-card">
+          <form id="guestbook-form" class="guestbook-form">
+            <div class="form-group">
+              <label for="input-name">Tu Nombre</label>
+              <input type="text" id="input-name" required placeholder="Ej. Carlos Martínez">
+            </div>
+            
+            <div class="form-group">
+              <label for="input-dept">Departamento / Relación</label>
+              <input type="text" id="input-dept" required placeholder="Ej. Contabilidad / Compañero">
+            </div>
+
+            <div class="form-group">
+              <label>Reacción de Afecto</label>
+              <div class="reaction-selector">
+                <input type="radio" name="reaction" id="react-heart" value="💖" checked>
+                <label for="react-heart" title="Cariño">💖</label>
+
+                <input type="radio" name="reaction" id="react-hug" value="🤗">
+                <label for="react-hug" title="Abrazo">🤗</label>
+
+                <input type="radio" name="reaction" id="react-applause" value="👏">
+                <label for="react-applause" title="Aplausos">👏</label>
+
+                <input type="radio" name="reaction" id="react-star" value="✨">
+                <label for="react-star" title="Brillo">✨</label>
+
+                <input type="radio" name="reaction" id="react-toast" value="🥂">
+                <label for="react-toast" title="Salud">🥂</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="input-message">Mensaje para Quenia</label>
+              <textarea id="input-message" rows="5" required placeholder="Escribe tus palabras cálidas aquí... Recuerdos, buenos deseos para su jubilación, agradecimientos."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="btn-submit-message">
+              <span>Enviar Mensaje con Afecto</span>
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Muro de Mensajes -->
+        <div class="guestbook-wall-wrapper">
+          <div class="guestbook-wall" id="guestbook-wall">
+            <!-- Tarjetas de mensajes inyectadas por JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Galería de Recuerdos -->
+    <section id="galeria" class="galeria-section">
+      <div class="section-header">
+        <h2 class="section-title">Galería de Momentos Memorables</h2>
+        <p class="section-description">
+          Instantáneas llenas de sonrisas, trabajo en equipo y celebraciones en Barraza Y Cia.
+        </p>
+      </div>
+
+      <div class="gallery-grid" id="gallery-grid">
+        <!-- Las fotos se generarán con JS y podrán expandirse -->
+      </div>
+      
+      <!-- Carga de fotos para demostración -->
+      <div class="gallery-uploader-container">
+        <label class="gallery-upload-btn">
+          <input type="file" id="gallery-image-upload" accept="image/*" multiple>
+          <span>Añadir Fotos al Álbum del Recuerdo</span>
+        </label>
+      </div>
+    </section>
+  </main>
+
+  <!-- Visor Lightbox de Galería -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visor de imágenes">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Cerrar visor">&times;</button>
+    <div class="lightbox-content">
+      <img src="" alt="" id="lightbox-img">
+      <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <footer class="main-footer">
+    <div class="footer-decor"></div>
+    <div class="footer-content">
+      <p class="footer-title">Homenaje a Quenia Quintana de Broce</p>
+      <p class="footer-info">Organizado con cariño por tus compañeros y la familia de Barraza Y Cia.</p>
+      <p class="footer-year">2026 &copy; Todos los derechos reservados. Feliz Jubilación.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
