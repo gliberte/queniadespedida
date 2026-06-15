@@ -318,21 +318,22 @@
         <!-- Las fotos se generarán con JS y podrán expandirse -->
       </div>
       
-      <!-- Carga de fotos para demostración -->
+      <!-- Carga de fotos y videos para demostración -->
       <div class="gallery-uploader-container">
         <label class="gallery-upload-btn">
-          <input type="file" id="gallery-image-upload" accept="image/*" multiple>
-          <span>Añadir Fotos al Álbum del Recuerdo</span>
+          <input type="file" id="gallery-image-upload" accept="image/*,video/*" multiple>
+          <span>Añadir Fotos o Videos al Álbum del Recuerdo</span>
         </label>
       </div>
     </section>
   </main>
 
   <!-- Visor Lightbox de Galería -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visor de imágenes">
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visor de imágenes y videos">
     <button class="lightbox-close" id="lightbox-close" aria-label="Cerrar visor">&times;</button>
     <div class="lightbox-content">
       <img src="" alt="" id="lightbox-img">
+      <video id="lightbox-video" controls style="display: none;"></video>
       <div class="lightbox-caption" id="lightbox-caption"></div>
     </div>
   </div>

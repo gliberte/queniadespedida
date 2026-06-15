@@ -108,7 +108,7 @@ const SLIDESHOW_DATA = [
 // Inicializar cliente de Supabase
 const supabaseUrl = 'https://dsyxiowlipttwjuhoqio.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzeXhpb3dsaXB0dHdqdWhvcWlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwODIxMTIsImV4cCI6MjA5NTY1ODExMn0.3nEAsh_QMmLr_RRD-FOErC-nNOSwaJxMJb_ENjJDaPI';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 /* ==========================================================================
    INICIALIZACIÓN GENERAL
@@ -448,6 +448,15 @@ async function initGallery() {
   // Cargar galería inicial
   await combineAndRenderGallery();
 
+  const lightboxVideo = document.getElementById("lightbox-video");
+
+  function isVideo(url) {
+    if (!url) return false;
+    const cleanUrl = url.split("?")[0].split("#")[0];
+    const extension = cleanUrl.split(".").pop().toLowerCase();
+    return ["mp4", "webm", "mov", "avi", "mkv", "3gp", "ogg"].includes(extension);
+  }
+
   function renderGalleryItems(photosList) {
     // Limpiar grid
     grid.innerHTML = "";
@@ -457,14 +466,26 @@ async function initGallery() {
       item.className = "gallery-item";
       
       const imgUrl = photo.url || createElegantPlaceholderSVG(photo.svgColor1, photo.svgColor2, photo.text);
+      const isVid = isVideo(imgUrl);
       
-      item.innerHTML = `
-        <img src="${imgUrl}" alt="${photo.title}">
-        <div class="gallery-caption">
-          <h4>${photo.title}</h4>
-          <p>${photo.desc}</p>
-        </div>
-      `;
+      if (isVid) {
+        item.innerHTML = `
+          <video src="${imgUrl}" muted autoplay loop playsinline></video>
+          <div class="video-badge" style="position: absolute; top: 12px; right: 12px; background: rgba(14, 5, 16, 0.7); padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; color: var(--accent-gold); border: 1px solid var(--border-gold); pointer-events: none; z-index: 2;">▶ VIDEO</div>
+          <div class="gallery-caption">
+            <h4>${photo.title}</h4>
+            <p>${photo.desc}</p>
+          </div>
+        `;
+      } else {
+        item.innerHTML = `
+          <img src="${imgUrl}" alt="${photo.title}">
+          <div class="gallery-caption">
+            <h4>${photo.title}</h4>
+            <p>${photo.desc}</p>
+          </div>
+        `;
+      }
       
       item.addEventListener("click", () => {
         openLightbox(imgUrl, photo.title, photo.desc);
@@ -475,13 +496,31 @@ async function initGallery() {
   }
 
   function openLightbox(src, title, desc) {
-    lightboxImg.src = src;
+    const isVid = isVideo(src);
+    if (isVid) {
+      lightboxImg.style.display = "none";
+      lightboxVideo.src = src;
+      lightboxVideo.style.display = "block";
+      lightboxVideo.play().catch(e => console.log("Video auto play blocked: ", e));
+    } else {
+      if (lightboxVideo) {
+        lightboxVideo.style.display = "none";
+        lightboxVideo.pause();
+        lightboxVideo.src = "";
+      }
+      lightboxImg.src = src;
+      lightboxImg.style.display = "block";
+    }
     lightboxCaption.innerHTML = `<h4>${title}</h4><p>${desc}</p>`;
     lightbox.classList.add("show");
   }
 
   function closeLightbox() {
     lightbox.classList.remove("show");
+    if (lightboxVideo) {
+      lightboxVideo.pause();
+      lightboxVideo.src = "";
+    }
   }
 
   lightboxClose.addEventListener("click", closeLightbox);
@@ -506,7 +545,7 @@ async function initGallery() {
       const filePath = fileName;
 
       // 1. Subir archivo a Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase
+      const { data: uploadData, error: uploadError } = await supabaseClient
         .storage
         .from('quenia_recuerdos')
         .upload(filePath, file);
@@ -518,7 +557,7 @@ async function initGallery() {
       }
 
       // 2. Obtener URL pública
-      const { data: urlData } = supabase
+      const { data: urlData } = supabaseClient
         .storage
         .from('quenia_recuerdos')
         .getPublicUrl(filePath);
@@ -532,7 +571,7 @@ async function initGallery() {
         url: publicUrl
       };
 
-      const { error: dbError } = await supabase
+      const { error: dbError } = await supabaseClient
         .from('quenia_photos')
         .insert([newPhotoRecord]);
 
@@ -551,7 +590,7 @@ async function initGallery() {
 
   async function combineAndRenderGallery() {
     // Obtener fotos de la base de datos
-    let { data: dbPhotos, error } = await supabase
+    let { data: dbPhotos, error } = await supabaseClient
       .from('quenia_photos')
       .select('*')
       .order('created_at', { ascending: true });
@@ -606,7 +645,7 @@ async function initGuestbook() {
     if (submitBtn) submitBtn.disabled = true;
 
     // Guardar en Supabase
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('quenia_messages')
       .insert([newEntry]);
       
@@ -629,7 +668,7 @@ async function initGuestbook() {
   });
   
   async function loadMessages(isUpdate = false) {
-    let { data: entries, error } = await supabase
+    let { data: entries, error } = await supabaseClient
       .from('quenia_messages')
       .select('*')
       .order('created_at', { ascending: false });
@@ -639,12 +678,12 @@ async function initGuestbook() {
       entries = PRESET_MESSAGES;
     } else if (!entries || entries.length === 0) {
       // Si la base de datos está vacía, pre-cargar los presets en Supabase
-      const { error: insertError } = await supabase
+      const { error: insertError } = await supabaseClient
         .from('quenia_messages')
         .insert(PRESET_MESSAGES);
       
       if (!insertError) {
-        const { data: reloaded } = await supabase
+        const { data: reloaded } = await supabaseClient
           .from('quenia_messages')
           .select('*')
           .order('created_at', { ascending: false });
