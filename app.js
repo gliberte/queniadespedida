@@ -222,6 +222,9 @@ function initVideoHub() {
     setTimeout(() => {
       videoMockOverlay.style.display = "none";
       
+      // Detener música de fondo antes de reproducir el video
+      stopGenerativeAudio();
+
       // Eliminar iframe previo si hubiera
       const oldIframe = document.querySelector(".tribute-iframe");
       if (oldIframe) oldIframe.remove();
@@ -234,7 +237,6 @@ function initVideoHub() {
       iframe.title = "Video Homenaje";
 
       document.getElementById("video-content-area").appendChild(iframe);
-      startGenerativeAudio();
       triggerCelebrationConfetti(40);
     }, 300);
   });
